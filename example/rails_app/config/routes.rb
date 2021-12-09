@@ -1,6 +1,3 @@
-RailsApp::Application.routes.draw do
-  post "items/update_quality" => "items#update_all"
-  resources :items
-
-  root :to => "items#index"
+Rails.application.routes.draw do
+  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

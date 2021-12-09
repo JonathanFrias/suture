@@ -50,9 +50,4 @@ if Gem.ruby_version >= Gem::Version.new("2.2.2")
   Rake::Task["release:rubygem_push"].enhance([:changelog, :changelog_commit])
 end
 
-if Gem::Version.new(RUBY_VERSION) < Gem::Version.new("2.2")
-  task :default => [:test, :example]
-else
-  require "standard/rake"
-  task :default => [:test, :"standard:fix", :example]
-end
+task :default => [:test, :example]

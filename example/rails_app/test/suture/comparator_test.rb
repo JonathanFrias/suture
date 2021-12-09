@@ -24,8 +24,8 @@ class SutureComparatorTest < Minitest::Test
   def test_default_ar_comparison_ignores_timestamps_includes_ids
     item1 = Item.create!(:quality => 5)
     item2 = Item.find(item1.id).tap { |i|
-      i.update_attributes!(:quality => 4)
-      i.update_attributes!(:quality => 5)
+      i.update(:quality => 4)
+      i.update(:quality => 5)
     }
     item3 = Item.create!(:quality => 5)
 
@@ -47,8 +47,8 @@ class SutureComparatorTest < Minitest::Test
 
     item1 = Item.create!(:quality => 5)
     item2 = Item.find(item1.id).tap { |i|
-      i.update_attributes!(:quality => 4)
-      i.update_attributes!(:quality => 5)
+      i.update(:quality => 4)
+      i.update(:quality => 5)
     }
     item3 = Item.create!(:quality => 5)
 

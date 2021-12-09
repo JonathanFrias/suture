@@ -1,5 +1,4 @@
 class Item < ActiveRecord::Base
-  attr_accessible :name, :sell_in, :quality
 
   def update_quality!
     if self.name != "Aged Brie" && self.name != "Backstage passes to a TAFKAL80ETC concert"
