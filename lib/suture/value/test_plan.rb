@@ -3,12 +3,12 @@ module Suture::Value
     attr_accessor :name, :subject,
       :verify_only, :fail_fast, :call_limit, :time_limit,
       :error_message_limit, :random_seed, :comparator,
-      :database_path, :after_subject, :on_subject_error,
+      :adapter_options, :after_subject, :on_subject_error,
       :expected_error_types
 
     def initialize(attrs = {})
       assign_simple_ivars!(attrs, :name, :subject, :comparator,
-        :database_path, :after_subject,
+        :adapter_options, :after_subject,
         :on_subject_error)
       assign_integral_ivars!(attrs, :verify_only, :call_limit, :time_limit,
         :error_message_limit)

@@ -116,7 +116,7 @@ module Suture
 
     def test_raise_when_record_calls_and_nil_database_path
       plan = Value::Plan.new(:name => :pants, :old => lambda {}, :args => [],
-                             :record_calls => true, :database_path => nil)
+                             :record_calls => true, :adapter_options => { :database_path => nil })
 
       error = assert_raises(Error::InvalidPlan) { @subject.validate(plan) }
 
@@ -129,7 +129,7 @@ module Suture
 
     def test_raise_when_record_calls_and_call_both_are_both_set
       plan = Value::Plan.new(:name => :pants, :old => lambda {}, :args => [],
-                             :record_calls => true, :database_path => true,
+                             :record_calls => true, adapter_options: { adapter: "sqlite", :database_path => true },
                              :call_both => true)
 
       error = assert_raises(Error::InvalidPlan) { @subject.validate(plan) }
@@ -150,8 +150,10 @@ module Suture
 
     def test_raise_when_record_calls_and_fallback_on_error_are_both_set
       plan = Value::Plan.new(:name => :pants, :old => lambda {}, :args => [],
-                             :record_calls => true, :database_path => true,
-                             :fallback_on_error => true)
+                             :record_calls => true,
+                             :fallback_on_error => true,
+                             :adapter_options => { :adapter => "sqlite",
+                                                   :database_path => true })
 
       error = assert_raises(Error::InvalidPlan) { @subject.validate(plan) }
 

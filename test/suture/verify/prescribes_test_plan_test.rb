@@ -21,7 +21,7 @@ class PrescribesTestPlanTest < UnitTest
     assert_nil result.call_limit
     assert_nil result.time_limit
     assert_nil result.error_message_limit
-    assert_equal "db/suture.sqlite3", result.database_path
+    assert_equal "db/suture.sqlite3", result.adapter_options[:database_path]
     assert_kind_of Suture::Comparator, result.comparator
     assert_includes 0..99999, result.random_seed
     assert_nil result.verify_only
@@ -30,14 +30,17 @@ class PrescribesTestPlanTest < UnitTest
 
   def test_global_overrides
     Suture.config(
-      :database_path => "other.db",
+      :adapter_options => {
+        :adapter => "sqlite",
+        :database_path => "other.db",
+      },
       :comparator => :lolcompare,
       :random_seed => nil
     )
 
     result = @subject.prescribe(:foo)
 
-    assert_equal "other.db", result.database_path
+    assert_equal "other.db", result.adapter_options[:database_path]
     assert_equal :lolcompare, result.comparator
     assert_nil result.random_seed
   end
@@ -48,7 +51,10 @@ class PrescribesTestPlanTest < UnitTest
     some_on_subject_error = lambda {}
 
     result = @subject.prescribe(:foo,
-      :database_path => "db",
+      :adapter_options => {
+        :adapter => "sqlite",
+        :database_path => "db",
+      },
       :subject => some_subject,
       :fail_fast => true,
       :call_limit => 11,
@@ -67,7 +73,7 @@ class PrescribesTestPlanTest < UnitTest
     assert_equal 11, result.call_limit
     assert_equal 99, result.time_limit
     assert_equal 83, result.error_message_limit
-    assert_equal "db", result.database_path
+    assert_equal "db", result.adapter_options[:database_path]
     assert_equal :lol_compare, result.comparator
     assert_equal 42, result.verify_only
     assert_equal 1337, result.random_seed
@@ -79,7 +85,8 @@ class PrescribesTestPlanTest < UnitTest
   def test_env_vars
     ENV["SUTURE_NAME"] = "bad name"
     ENV["SUTURE_SUBJECT"] = "sub"
-    ENV["SUTURE_DATABASE_PATH"] = "d"
+    ENV["SUTURE_ADAPTER"] = "sqlite"
+    ENV["SUTURE_ADAPTER_DATABASE_PATH"] = "d"
     ENV["SUTURE_COMPARATOR"] = "e"
     ENV["SUTURE_FAIL_FAST"] = "true"
     ENV["SUTURE_CALL_LIMIT"] = "91"
@@ -93,7 +100,7 @@ class PrescribesTestPlanTest < UnitTest
 
     result = @subject.prescribe(:a_name)
 
-    assert_equal "d", result.database_path
+    assert_equal "d", result.adapter_options[:database_path]
     assert_equal true, result.fail_fast
     assert_equal 91, result.call_limit
     assert_equal 20, result.time_limit

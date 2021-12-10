@@ -2,6 +2,8 @@
 
 require "suture/verify/prescribes_test_plan"
 require "suture/value/test_results"
+require "suture/value/observation"
+require "suture/error/verification_failed"
 
 require "support/assertions"
 
@@ -115,7 +117,10 @@ module Suture::Error
     def test_the_kitchen_sink
       test_plan = Suture::PrescribesTestPlan.new.prescribe(:pets, {
         :comparator => lambda {|left, right| left == right },
-        :database_path => "lol.db",
+        :adapter_options => {
+          adapter: "sqlite",
+          :database_path => "lol.db",
+        },
         :fail_fast => true,
         :call_limit => 42,
         :random_seed => nil,
@@ -235,7 +240,7 @@ module Suture::Error
           :time_limit => nil, # (no limit)
           :error_message_limit => nil, # (no limit)
           :random_seed => nil, # (insertion order)
-          :comparator => Proc # (in: `test/suture/error/verification_failed_test.rb:117`)
+          :comparator => Proc # (in: `test/suture/error/verification_failed_test.rb:119`)
         }
         ```
 

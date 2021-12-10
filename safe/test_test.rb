@@ -1,3 +1,4 @@
+require_relative "helper"
 require "suture/verify"
 require "fixtures/calculator"
 

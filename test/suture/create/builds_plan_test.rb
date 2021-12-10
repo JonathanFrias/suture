@@ -1,4 +1,5 @@
 require "suture/create/builds_plan"
+require "suture/reset"
 
 module Suture
   class BuildsPlanTest < UnitTest
@@ -11,7 +12,8 @@ module Suture
     def test_defaults
       result = BuildsPlan.new.build(:foo)
 
-      assert_equal "db/suture.sqlite3", result.database_path
+      assert_equal "sqlite", result.adapter_options[:adapter]
+      assert_equal "db/suture.sqlite3", result.adapter_options[:database_path]
       assert_kind_of Suture::Comparator, result.comparator
       assert_equal false, result.call_both
       assert_equal false, result.dup_args
@@ -22,12 +24,12 @@ module Suture
     end
 
     def test_global_overrides
-      Suture.config(:database_path => "other.db")
+      Suture.config(:adapter_options => { :adapter => "sqlite", :database_path => "other.db" })
       Suture.config(:comparator => :lol_compare)
 
       result = BuildsPlan.new.build(:foo)
 
-      assert_equal "other.db", result.database_path
+      assert_equal "other.db", result.adapter_options[:database_path]
       assert_equal :lol_compare, result.comparator
     end
 
@@ -47,7 +49,10 @@ module Suture
         :args => some_args,
         :record_calls => :panda,
         :comparator => some_comparator,
-        :database_path => "blah.db",
+        :adapter_options => {
+          :adapter => "sqlite",
+          :database_path => "blah.db",
+        },
         :raise_on_result_mismatch => false,
         :return_old_on_result_mismatch => true,
         :after_new => some_after_new,
@@ -65,7 +70,7 @@ module Suture
       assert_equal some_args, result.args
       assert_equal true, result.record_calls
       assert_equal some_comparator, result.comparator
-      assert_equal "blah.db", result.database_path
+      assert_equal "blah.db", result.adapter_options[:database_path]
       assert_equal false, result.raise_on_result_mismatch
       assert_equal true, result.return_old_on_result_mismatch
       assert_equal some_after_new, result.after_new
@@ -84,7 +89,7 @@ module Suture
       ENV["SUTURE_NEW"] = "b"
       ENV["SUTURE_ARGS"] = "c"
       ENV["SUTURE_COMPARATOR"] = "e"
-      ENV["SUTURE_DATABASE_PATH"] = "d"
+      ENV["SUTURE_ADAPTER_DATABASE_PATH"] = "d"
       ENV["SUTURE_RAISE_ON_RESULT_MISMATCH"] = "false"
       ENV["SUTURE_RETURN_OLD_ON_RESULT_MISMATCH"] = "true"
       ENV["SUTURE_AFTER_OLD"] = "f"
@@ -97,7 +102,7 @@ module Suture
 
       result = BuildsPlan.new.build(:a_name)
 
-      assert_equal "d", result.database_path
+      assert_equal "d", result.adapter_options[:database_path]
       assert_equal true, result.record_calls
       # options that can't be set with ENV vars:
       assert_equal :a_name, result.name

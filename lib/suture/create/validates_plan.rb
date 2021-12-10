@@ -25,7 +25,7 @@ module Suture
 
     CONFLICTS = [
       lambda { |plan|
-        if plan.record_calls && !plan.database_path
+        if plan.record_calls && !plan.adapter_options[:database_path]
           <<-MSG.gsub(/^ {12}/, "")
             :record_calls is enabled, but :database_path is nil, so Suture
               doesn't know where to record calls to the seam.

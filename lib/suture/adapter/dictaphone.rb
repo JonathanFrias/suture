@@ -10,7 +10,8 @@ module Suture::Adapter
     include Suture::Adapter::Log
 
     def initialize(plan)
-      @db = Suture::Wrap::Sqlite.init(plan.database_path)
+      @adapter_class = Suture::Wrap.const_get("#{plan.adapter_options[:adapter].capitalize}")
+      @db = @adapter_class.init(plan.adapter_options)
       @name = plan.name
       @compares_results = Suture::Util::ComparesResults.new(plan.comparator)
       if plan.respond_to?(:args) # does not apply to TestPlan objects
@@ -28,7 +29,7 @@ module Suture::Adapter
     end
 
     def play(only_id = nil)
-      rows = Suture::Wrap::Sqlite.select(
+      rows = @adapter_class.select(
         @db, :observations,
         "where name = ? #{"and id = ?" if only_id}",
         [@name.to_s, only_id].compact
@@ -39,18 +40,18 @@ module Suture::Adapter
 
     def delete_by_id!(id)
       log_info("deleting call with ID: #{id}")
-      Suture::Wrap::Sqlite.delete(@db, :observations, "where id = ?", [id])
+      @adapter_class.delete(@db, :observations, "where id = ?", [id])
     end
 
     def delete_by_name!(name)
       log_info("deleting calls for seam named: #{name}")
-      Suture::Wrap::Sqlite.delete(@db, :observations, "where name = ?", [name.to_s])
+      @adapter_class.delete(@db, :observations, "where name = ?", [name.to_s])
     end
 
     private
 
     def record_result(result)
-      Suture::Wrap::Sqlite.insert(
+      @adapter_class.insert(
         @db,
         :observations,
         [:name, :args, result.errored? ? :error : :result],
@@ -77,7 +78,7 @@ module Suture::Adapter
     end
 
     def known_observation
-      row_to_observation(Suture::Wrap::Sqlite.select(
+      row_to_observation(@adapter_class.select(
         @db,
         :observations,
         "where name = ? and args = ?",
