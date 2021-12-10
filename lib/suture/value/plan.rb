@@ -5,7 +5,7 @@ module Suture::Value
       :call_both, :raise_on_result_mismatch,
       :return_old_on_result_mismatch, :fallback_on_error,
       :expected_error_types, :disable, :dup_args,
-      :adapter, :adapter_options
+      :adapter_options
 
     def initialize(attrs = {})
       @name = attrs[:name]

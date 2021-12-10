@@ -89,6 +89,7 @@ module Suture
       ENV["SUTURE_NEW"] = "b"
       ENV["SUTURE_ARGS"] = "c"
       ENV["SUTURE_COMPARATOR"] = "e"
+      ENV["SUTURE_ADAPTER"] = "sqlite"
       ENV["SUTURE_ADAPTER_DATABASE_PATH"] = "d"
       ENV["SUTURE_RAISE_ON_RESULT_MISMATCH"] = "false"
       ENV["SUTURE_RETURN_OLD_ON_RESULT_MISMATCH"] = "true"
